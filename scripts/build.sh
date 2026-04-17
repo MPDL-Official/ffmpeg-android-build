@@ -112,11 +112,6 @@ build_x265() {
   clone "https://bitbucket.org/multicoreware/x265_git.git" x265_git
   mkdir -p x265_git/build_android && cd x265_git/build_android
 
-  X265_EXTRA=""
-  if [ "$ARCH" = "armeabi-v7a" ] || [ "$ARCH" = "x86" ]; then
-    X265_EXTRA="-DENABLE_ASSEMBLY=OFF"
-  fi
-
   cmake ../source \
     -DCMAKE_TOOLCHAIN_FILE="${NDK}/build/cmake/android.toolchain.cmake" \
     -DANDROID_ABI="$ARCH" \
@@ -124,13 +119,11 @@ build_x265() {
     -DCMAKE_INSTALL_PREFIX="$PREFIX" \
     -DCMAKE_C_FLAGS="$COMMON_CFLAGS" \
     -DCMAKE_CXX_FLAGS="$COMMON_CFLAGS" \
-    -DCMAKE_ASM_COMPILER="$CC" \
-    -DCMAKE_ASM_FLAGS="--target=${TARGET}${API} $COMMON_CFLAGS" \
     -DENABLE_SHARED=OFF \
     -DENABLE_CLI=OFF \
     -DENABLE_PIC=ON \
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-    $X265_EXTRA \
+    -DENABLE_ASSEMBLY=OFF \
     -G Ninja
   ninja -j"$JOBS"
   ninja install
