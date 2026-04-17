@@ -95,10 +95,8 @@ build_x264() {
     --prefix="$PREFIX" \
     --host="$TARGET" \
     --cross-prefix="${TOOLCHAIN}/bin/llvm-" \
-    --cc="$CC" \
     --sysroot="$SYSROOT" \
     --enable-static \
-    --disable-shared \
     --enable-pic \
     --disable-cli \
     --extra-cflags="$COMMON_CFLAGS" \
@@ -120,13 +118,10 @@ build_x265() {
   fi
 
   cmake ../source \
-    -DCMAKE_SYSTEM_NAME=Android \
-    -DCMAKE_SYSTEM_VERSION="$API" \
-    -DCMAKE_ANDROID_ARCH_ABI="$ARCH" \
-    -DCMAKE_ANDROID_NDK="$NDK" \
+    -DCMAKE_TOOLCHAIN_FILE="${NDK}/build/cmake/android.toolchain.cmake" \
+    -DANDROID_ABI="$ARCH" \
+    -DANDROID_PLATFORM="android-${API}" \
     -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-    -DCMAKE_C_COMPILER="$CC" \
-    -DCMAKE_CXX_COMPILER="$CXX" \
     -DCMAKE_C_FLAGS="$COMMON_CFLAGS" \
     -DCMAKE_CXX_FLAGS="$COMMON_CFLAGS" \
     -DENABLE_SHARED=OFF \
@@ -324,13 +319,10 @@ build_freetype() {
   clone "https://github.com/freetype/freetype.git" freetype VER-2-13-3
   cd freetype
   cmake -B build \
-    -DCMAKE_SYSTEM_NAME=Android \
-    -DCMAKE_SYSTEM_VERSION="$API" \
-    -DCMAKE_ANDROID_ARCH_ABI="$ARCH" \
-    -DCMAKE_ANDROID_NDK="$NDK" \
+    -DCMAKE_TOOLCHAIN_FILE="${NDK}/build/cmake/android.toolchain.cmake" \
+    -DANDROID_ABI="$ARCH" \
+    -DANDROID_PLATFORM="android-${API}" \
     -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-    -DCMAKE_C_COMPILER="$CC" \
-    -DCMAKE_C_FLAGS="$COMMON_CFLAGS" \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
     -DFT_DISABLE_BZIP2=ON \
