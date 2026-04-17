@@ -265,8 +265,8 @@ build_fdk_aac() {
     --disable-shared \
     --with-pic \
     CC="$CC" CXX="$CXX" \
-    CFLAGS="$COMMON_CFLAGS" \
-    CXXFLAGS="$COMMON_CFLAGS"
+    CFLAGS="-fPIC -D__ANDROID_API__=${API}" \
+    CXXFLAGS="-fPIC -D__ANDROID_API__=${API}"
   make -j"$JOBS"
   make install
   cd "$WORKDIR"
