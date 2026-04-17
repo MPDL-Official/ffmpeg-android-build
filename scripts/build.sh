@@ -252,8 +252,11 @@ build_vpx() {
 # ── fdk-aac ──────────────────────────────────────────────────────────
 build_fdk_aac() {
   echo ">>> Building fdk-aac"
-  clone "https://github.com/mstorsjo/fdk-aac.git" fdk-aac v2.0.2
-  cd fdk-aac
+  if [ ! -d "fdk-aac-2.0.2" ]; then
+    wget -q "https://github.com/mstorsjo/fdk-aac/archive/refs/tags/v2.0.2.tar.gz" -O fdk-aac-2.0.2.tar.gz
+    tar xzf fdk-aac-2.0.2.tar.gz
+  fi
+  cd fdk-aac-2.0.2
   autoreconf -fiv
   ./configure \
     --prefix="$PREFIX" \
