@@ -233,7 +233,6 @@ build_vpx() {
   ./configure \
     --prefix="$PREFIX" \
     --target="$VPX_TARGET" \
-    --sdk-path="$NDK" \
     --enable-static \
     --disable-shared \
     --enable-pic \
