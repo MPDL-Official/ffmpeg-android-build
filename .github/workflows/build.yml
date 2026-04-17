@@ -1,0 +1,104 @@
+name: Build FFmpeg for Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: 'Target architecture'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - arm64-v8a
+          - armeabi-v7a
+          - x86_64
+          - x86
+      ffmpeg_version:
+        description: 'FFmpeg version tag (e.g. n7.1)'
+        required: true
+        default: 'n7.1'
+      create_release:
+        description: 'Create GitHub Release'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ github.event.inputs.arch == 'all' && fromJSON('["arm64-v8a","armeabi-v7a","x86_64","x86"]') || fromJSON(format('["{0}"]', github.event.inputs.arch)) }}
+
+    env:
+      API: 23
+      NDK_VERSION: r27c
+      FFMPEG_VERSION: ${{ github.event.inputs.ffmpeg_version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            autoconf automake build-essential cmake git libtool \
+            meson nasm ninja-build pkg-config python3 python3-pip \
+            texinfo wget yasm zlib1g-dev
+
+      - name: Setup Android NDK
+        run: |
+          wget -q "https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip"
+          unzip -q "android-ndk-${NDK_VERSION}-linux.zip"
+          echo "ANDROID_NDK_HOME=$PWD/android-ndk-${NDK_VERSION}" >> $GITHUB_ENV
+
+      - name: Build FFmpeg
+        run: |
+          chmod +x scripts/build.sh
+          bash scripts/build.sh ${{ matrix.arch }}
+
+      - name: Package binary
+        run: |
+          cd output/${{ matrix.arch }}
+          chmod +x ffmpeg ffprobe
+          tar czf ../../ffmpeg-android-${{ matrix.arch }}.tar.gz ffmpeg ffprobe
+          cd ../..
+          sha256sum ffmpeg-android-${{ matrix.arch }}.tar.gz > ffmpeg-android-${{ matrix.arch }}.tar.gz.sha256
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-android-${{ matrix.arch }}
+          path: |
+            ffmpeg-android-${{ matrix.arch }}.tar.gz
+            ffmpeg-android-${{ matrix.arch }}.tar.gz.sha256
+
+  release:
+    needs: build
+    if: github.event.inputs.create_release == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.ffmpeg_version }}-android-${{ github.run_number }}
+          name: "FFmpeg ${{ github.event.inputs.ffmpeg_version }} Android Static Build #${{ github.run_number }}"
+          body: |
+            Static FFmpeg build for Android (API level 23+, GPL).
+
+            Included libraries: x264, x265, libmp3lame, libopus, libvorbis, libvpx, fdk-aac, dav1d, libass (freetype, fribidi, harfbuzz).
+
+            Usage: `adb push ffmpeg /data/local/tmp/ && adb shell chmod +x /data/local/tmp/ffmpeg`
+          files: artifacts/*
