@@ -252,7 +252,7 @@ build_vpx() {
 # ── fdk-aac ──────────────────────────────────────────────────────────
 build_fdk_aac() {
   echo ">>> Building fdk-aac"
-  clone "https://github.com/mstorsjo/fdk-aac.git" fdk-aac v2.0.3
+  clone "https://github.com/mstorsjo/fdk-aac.git" fdk-aac v2.0.2
   cd fdk-aac
   autoreconf -fiv
   ./configure \
