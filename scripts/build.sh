@@ -458,8 +458,7 @@ includedir=\${prefix}/include
 Name: harfbuzz
 Description: HarfBuzz text shaping library
 Version: 10.1.0
-Requires: freetype2
-Libs: -L\${libdir} -lharfbuzz
+Libs: -L\${libdir} -lharfbuzz -lfreetype -lz
 Cflags: -I\${includedir}/harfbuzz
 PCEOF
 
@@ -498,6 +497,15 @@ build_ffmpeg() {
   echo ">>> Building FFmpeg ${FFMPEG_VERSION}"
   clone "https://github.com/FFmpeg/FFmpeg.git" FFmpeg "$FFMPEG_VERSION"
   cd FFmpeg
+
+  # Debug: verify pkg-config can find all deps
+  echo "--- pkg-config debug ---"
+  ls "${PREFIX}/lib/pkgconfig/"
+  "${PKGCONFIG_WRAPPER}" --list-all 2>&1 | head -20
+  for pkg in x264 x265 libmp3lame opus vorbis vpx fdk-aac dav1d freetype2 fribidi harfbuzz libass; do
+    "${PKGCONFIG_WRAPPER}" --exists "$pkg" 2>&1 && echo "  $pkg: OK" || echo "  $pkg: NOT FOUND"
+  done
+  echo "--- end debug ---"
 
   EXTRA_CFLAGS="-I${PREFIX}/include $COMMON_CFLAGS"
   EXTRA_LDFLAGS="-L${PREFIX}/lib $COMMON_LDFLAGS"
