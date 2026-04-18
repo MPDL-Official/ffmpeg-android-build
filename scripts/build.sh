@@ -360,10 +360,10 @@ build_freetype() {
   ninja -C build -j"$JOBS"
   ninja -C build install
 
-  # Ensure freetype2.pc exists — CMake doesn't always generate it
+  # Write a clean freetype2.pc — CMake may not generate one, or may
+  # reference zlib which has no .pc file in the NDK sysroot.
   mkdir -p "${PREFIX}/lib/pkgconfig"
-  if [ ! -f "${PREFIX}/lib/pkgconfig/freetype2.pc" ]; then
-    cat > "${PREFIX}/lib/pkgconfig/freetype2.pc" <<PCEOF
+  cat > "${PREFIX}/lib/pkgconfig/freetype2.pc" <<PCEOF
 prefix=${PREFIX}
 exec_prefix=\${prefix}
 libdir=\${prefix}/lib
@@ -373,11 +373,9 @@ Name: FreeType 2
 Description: A free, high-quality, and portable font engine.
 Version: 2.13.3
 Requires:
-Libs: -L\${libdir} -lfreetype
-Libs.private: -lz
+Libs: -L\${libdir} -lfreetype -lz
 Cflags: -I\${includedir}/freetype2
 PCEOF
-  fi
   echo ">>> freetype2.pc at: ${PREFIX}/lib/pkgconfig/"
   ls -la "${PREFIX}/lib/pkgconfig/freetype"* 2>/dev/null || true
   cd "$WORKDIR"
