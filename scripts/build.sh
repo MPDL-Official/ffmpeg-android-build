@@ -297,6 +297,7 @@ c = '${CC}'
 cpp = '${CXX}'
 ar = '${AR}'
 strip = '${STRIP}'
+pkg-config = 'pkg-config'
 
 [host_machine]
 system = 'android'
@@ -306,6 +307,7 @@ endian = 'little'
 
 [properties]
 needs_exe_wrapper = true
+pkg_config_libdir = '${PREFIX}/lib/pkgconfig'
 
 [built-in options]
 c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
@@ -357,12 +359,16 @@ build_fribidi() {
 c = '${CC}'
 ar = '${AR}'
 strip = '${STRIP}'
+pkg-config = 'pkg-config'
 
 [host_machine]
 system = 'android'
 cpu_family = '${FFMPEG_ARCH}'
 cpu = '${CPU}'
 endian = 'little'
+
+[properties]
+pkg_config_libdir = '${PREFIX}/lib/pkgconfig'
 
 [built-in options]
 c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
@@ -393,12 +399,16 @@ c = '${CC}'
 cpp = '${CXX}'
 ar = '${AR}'
 strip = '${STRIP}'
+pkg-config = 'pkg-config'
 
 [host_machine]
 system = 'android'
 cpu_family = '${FFMPEG_ARCH}'
 cpu = '${CPU}'
 endian = 'little'
+
+[properties]
+pkg_config_libdir = '${PREFIX}/lib/pkgconfig'
 
 [built-in options]
 c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
