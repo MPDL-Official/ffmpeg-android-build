@@ -486,6 +486,8 @@ build_libass() {
     LDFLAGS="$COMMON_LDFLAGS -L${PREFIX}/lib" \
     PKG_CONFIG="${PKGCONFIG_WRAPPER}" \
     PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig" \
+    am_cv_func_iconv=no \
+    ac_cv_func_iconv_open=no \
     ac_cv_func_iconv=no
   make -j"$JOBS"
   make install
