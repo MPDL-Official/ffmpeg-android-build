@@ -257,6 +257,20 @@ build_fdk_aac() {
     tar xzf fdk-aac-2.0.2.tar.gz
   fi
   cd fdk-aac-2.0.2
+
+  # Stub out AOSP-internal log/log.h that isn't in the NDK
+  mkdir -p stub/log
+  cat > stub/log/log.h <<'STUBEOF'
+#pragma once
+#define ALOG(...)
+#define ALOGE(...)
+#define ALOGW(...)
+#define ALOGI(...)
+#define ALOGD(...)
+#define ALOGV(...)
+#define android_errorWriteLog(...)
+STUBEOF
+
   autoreconf -fiv
   ./configure \
     --prefix="$PREFIX" \
@@ -265,8 +279,8 @@ build_fdk_aac() {
     --disable-shared \
     --with-pic \
     CC="$CC" CXX="$CXX" \
-    CFLAGS="-fPIC -D__ANDROID_API__=${API} -UANDROID" \
-    CXXFLAGS="-fPIC -D__ANDROID_API__=${API} -UANDROID"
+    CFLAGS="$COMMON_CFLAGS -I$(pwd)/stub" \
+    CXXFLAGS="$COMMON_CFLAGS -I$(pwd)/stub"
   make -j"$JOBS"
   make install
   cd "$WORKDIR"
