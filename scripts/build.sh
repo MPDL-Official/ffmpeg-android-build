@@ -509,6 +509,7 @@ build_ffmpeg() {
   PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig" \
   ./configure \
     --prefix="$PREFIX" \
+    --pkg-config="${PKGCONFIG_WRAPPER}" \
     --target-os=android \
     --arch="$FFMPEG_ARCH" \
     --cpu="$CPU" \
