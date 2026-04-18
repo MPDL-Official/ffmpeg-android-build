@@ -59,7 +59,7 @@ if [ "$ARCH" = "armeabi-v7a" ]; then
   CXX="${TOOLCHAIN}/bin/armv7a-linux-androideabi${API}-clang++"
 fi
 
-COMMON_CFLAGS="-fPIC -DANDROID -D__ANDROID_API__=${API}"
+COMMON_CFLAGS="-fPIC -DANDROID"
 COMMON_LDFLAGS="-static"
 
 export CC CXX AR RANLIB STRIP NM AS
@@ -322,7 +322,7 @@ needs_exe_wrapper = true
 pkg_config_libdir = ['${PREFIX}/lib/pkgconfig']
 
 [built-in options]
-c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
+c_args = ['-fPIC', '-DANDROID']
 CROSSEOF
 
   PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig" \
@@ -407,7 +407,7 @@ pkg_config_libdir = ['${PREFIX}/lib/pkgconfig']
 cmake_prefix_path = ['${PREFIX}']
 
 [built-in options]
-c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
+c_args = ['-fPIC', '-DANDROID']
 CROSSEOF
 
   PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig" \
@@ -481,11 +481,14 @@ build_libass() {
     --disable-shared \
     --with-pic \
     --disable-require-system-font-provider \
+    --disable-libunibreak \
     CC="$CC" CXX="$CXX" \
-    CFLAGS="$COMMON_CFLAGS -I${PREFIX}/include" \
+    CFLAGS="$COMMON_CFLAGS -I${PREFIX}/include -I${PREFIX}/include/freetype2 -I${PREFIX}/include/harfbuzz -I${PREFIX}/include/fribidi" \
     CXXFLAGS="$COMMON_CFLAGS -I${PREFIX}/include" \
     LDFLAGS="$COMMON_LDFLAGS -L${PREFIX}/lib" \
-    PKG_CONFIG_PATH="$PKG_CONFIG_PATH"
+    PKG_CONFIG="${PKGCONFIG_WRAPPER}" \
+    PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig" \
+    ac_cv_func_iconv=no
   make -j"$JOBS"
   make install
   cd "$WORKDIR"
