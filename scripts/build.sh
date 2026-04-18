@@ -505,6 +505,8 @@ build_ffmpeg() {
   # x265 needs -lc++ on Android
   EXTRA_LIBS="-lc++ -lm -ldl"
 
+  PKG_CONFIG="${PKGCONFIG_WRAPPER}" \
+  PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig" \
   ./configure \
     --prefix="$PREFIX" \
     --target-os=android \
