@@ -7,7 +7,7 @@ Produces standalone `ffmpeg` and `ffprobe` executables that run directly on Andr
 ## Features
 
 - Fully static binaries, single-file deployment
-- minSdkVersion 23 (Android 6.0+)
+- minSdkVersion 28 (Android 9.0+)
 - GPL + nonfree license configuration
 - 4 architectures: `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`
 - Automated build & release via GitHub Actions

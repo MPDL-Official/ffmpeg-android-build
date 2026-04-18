@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ── Arguments & Globals ──────────────────────────────────────────────
 ARCH="${1:?Usage: build.sh <arm64-v8a|armeabi-v7a|x86_64|x86>}"
-API="${API:-23}"
+API="${API:-28}"
 FFMPEG_VERSION="${FFMPEG_VERSION:-n7.1}"
 NDK="${ANDROID_NDK_HOME:?Set ANDROID_NDK_HOME}"
 JOBS="$(nproc)"
@@ -485,10 +485,7 @@ build_libass() {
     CXXFLAGS="$COMMON_CFLAGS -I${PREFIX}/include" \
     LDFLAGS="$COMMON_LDFLAGS -L${PREFIX}/lib" \
     PKG_CONFIG="${PKGCONFIG_WRAPPER}" \
-    PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig" \
-    am_cv_func_iconv=no \
-    ac_cv_func_iconv_open=no \
-    ac_cv_func_iconv=no
+    PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
   make -j"$JOBS"
   make install
   cd "$WORKDIR"

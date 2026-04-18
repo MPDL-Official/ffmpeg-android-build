@@ -36,7 +36,7 @@ jobs:
         arch: ${{ github.event.inputs.arch == 'all' && fromJSON('["arm64-v8a","armeabi-v7a","x86_64","x86"]') || fromJSON(format('["{0}"]', github.event.inputs.arch)) }}
 
     env:
-      API: 23
+      API: 28
       NDK_VERSION: r27c
       FFMPEG_VERSION: ${{ github.event.inputs.ffmpeg_version }}
 
@@ -96,7 +96,7 @@ jobs:
           tag_name: ${{ github.event.inputs.ffmpeg_version }}-android-${{ github.run_number }}
           name: "FFmpeg ${{ github.event.inputs.ffmpeg_version }} Android Static Build #${{ github.run_number }}"
           body: |
-            Static FFmpeg build for Android (API level 23+, GPL).
+            Static FFmpeg build for Android (API level 28+, GPL).
 
             Included libraries: x264, x265, libmp3lame, libopus, libvorbis, libvpx, fdk-aac, dav1d, libass (freetype, fribidi, harfbuzz).
 
