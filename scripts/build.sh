@@ -82,6 +82,18 @@ clone() {
 
 cd "$WORKDIR"
 
+# ── pkg-config wrapper for cross-compilation ─────────────────────────
+# Meson 1.3.x ignores PKG_CONFIG_LIBDIR env and cross-file properties.
+# A wrapper script that forces the search path is the only reliable fix.
+PKGCONFIG_WRAPPER="${WORKDIR}/pkg-config-cross"
+cat > "$PKGCONFIG_WRAPPER" <<WRAPPER
+#!/bin/sh
+export PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig"
+export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
+exec pkg-config "\$@"
+WRAPPER
+chmod +x "$PKGCONFIG_WRAPPER"
+
 # ══════════════════════════════════════════════════════════════════════
 # Library builds
 # ══════════════════════════════════════════════════════════════════════
@@ -297,7 +309,7 @@ c = '${CC}'
 cpp = '${CXX}'
 ar = '${AR}'
 strip = '${STRIP}'
-pkg-config = 'pkg-config'
+pkg-config = '${PKGCONFIG_WRAPPER}'
 
 [host_machine]
 system = 'android'
@@ -382,7 +394,7 @@ build_fribidi() {
 c = '${CC}'
 ar = '${AR}'
 strip = '${STRIP}'
-pkg-config = 'pkg-config'
+pkg-config = '${PKGCONFIG_WRAPPER}'
 
 [host_machine]
 system = 'android'
@@ -425,7 +437,7 @@ c = '${CC}'
 cpp = '${CXX}'
 ar = '${AR}'
 strip = '${STRIP}'
-pkg-config = 'pkg-config'
+pkg-config = '${PKGCONFIG_WRAPPER}'
 
 [host_machine]
 system = 'android'
