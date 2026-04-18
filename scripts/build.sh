@@ -313,6 +313,8 @@ pkg_config_libdir = '${PREFIX}/lib/pkgconfig'
 c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
 CROSSEOF
 
+  PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig" \
+  PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig" \
   meson setup dav1d/builddir dav1d \
     --cross-file "dav1d/cross-${ARCH}.txt" \
     --prefix="$PREFIX" \
@@ -374,6 +376,8 @@ pkg_config_libdir = '${PREFIX}/lib/pkgconfig'
 c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
 CROSSEOF
 
+  PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig" \
+  PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig" \
   meson setup builddir \
     --cross-file "cross-${ARCH}.txt" \
     --prefix="$PREFIX" \
@@ -415,6 +419,8 @@ c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
 cpp_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
 CROSSEOF
 
+  PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig" \
+  PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig" \
   meson setup builddir \
     --cross-file "cross-${ARCH}.txt" \
     --prefix="$PREFIX" \
