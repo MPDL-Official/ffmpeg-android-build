@@ -427,49 +427,44 @@ CROSSEOF
 
 # ── harfbuzz ─────────────────────────────────────────────────────────
 build_harfbuzz() {
-  echo ">>> Building harfbuzz"
+  echo ">>> Building harfbuzz (amalgamated source)"
   clone "https://github.com/harfbuzz/harfbuzz.git" harfbuzz 10.1.0
   cd harfbuzz
 
-  cat > cross-${ARCH}.txt <<CROSSEOF
-[binaries]
-c = '${CC}'
-cpp = '${CXX}'
-ar = '${AR}'
-strip = '${STRIP}'
-pkg-config = '${PKGCONFIG_WRAPPER}'
+  # Build using amalgamated source — bypasses meson entirely
+  $CXX \
+    $COMMON_CFLAGS \
+    -O2 -fno-exceptions -fno-rtti \
+    -DHB_TINY \
+    -DHAVE_FREETYPE \
+    -I src \
+    -I "${PREFIX}/include/freetype2" \
+    -c src/harfbuzz.cc \
+    -o harfbuzz.o
 
-[host_machine]
-system = 'android'
-cpu_family = '${FFMPEG_ARCH}'
-cpu = '${CPU}'
-endian = 'little'
+  $AR rcs libharfbuzz.a harfbuzz.o
+  $RANLIB libharfbuzz.a
 
-[properties]
-pkg_config_libdir = ['${PREFIX}/lib/pkgconfig']
-cmake_prefix_path = ['${PREFIX}']
+  # Install
+  mkdir -p "${PREFIX}/lib" "${PREFIX}/include/harfbuzz" "${PREFIX}/lib/pkgconfig"
+  cp libharfbuzz.a "${PREFIX}/lib/"
+  cp src/hb.h src/hb-*.h "${PREFIX}/include/harfbuzz/"
 
-[built-in options]
-c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
-cpp_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
-CROSSEOF
+  # Generate .pc file
+  cat > "${PREFIX}/lib/pkgconfig/harfbuzz.pc" <<PCEOF
+prefix=${PREFIX}
+exec_prefix=\${prefix}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
 
-  PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig" \
-  PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig" \
-  meson setup builddir \
-    --cross-file "cross-${ARCH}.txt" \
-    --prefix="$PREFIX" \
-    --default-library=static \
-    --buildtype=release \
-    -Dfreetype=enabled \
-    -Dglib=disabled \
-    -Dgobject=disabled \
-    -Dcairo=disabled \
-    -Dicu=disabled \
-    -Dtests=disabled \
-    -Ddocs=disabled
-  ninja -C builddir -j"$JOBS"
-  ninja -C builddir install
+Name: harfbuzz
+Description: HarfBuzz text shaping library
+Version: 10.1.0
+Requires: freetype2
+Libs: -L\${libdir} -lharfbuzz
+Cflags: -I\${includedir}/harfbuzz
+PCEOF
+
   cd "$WORKDIR"
 }
 
