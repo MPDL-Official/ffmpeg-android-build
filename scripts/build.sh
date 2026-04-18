@@ -369,6 +369,9 @@ PCEOF
   echo ">>> freetype2.pc at: ${PREFIX}/lib/pkgconfig/"
   ls -la "${PREFIX}/lib/pkgconfig/freetype"* 2>/dev/null || true
   cd "$WORKDIR"
+}
+
+# ── fribidi ──────────────────────────────────────────────────────────
 build_fribidi() {
   echo ">>> Building fribidi"
   clone "https://github.com/fribidi/fribidi.git" fribidi v1.0.16
