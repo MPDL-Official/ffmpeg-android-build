@@ -307,7 +307,7 @@ endian = 'little'
 
 [properties]
 needs_exe_wrapper = true
-pkg_config_libdir = '${PREFIX}/lib/pkgconfig'
+pkg_config_libdir = ['${PREFIX}/lib/pkgconfig']
 
 [built-in options]
 c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
@@ -347,10 +347,28 @@ build_freetype() {
     -G Ninja
   ninja -C build -j"$JOBS"
   ninja -C build install
-  cd "$WORKDIR"
-}
 
-# ── fribidi ──────────────────────────────────────────────────────────
+  # Ensure freetype2.pc exists — CMake doesn't always generate it
+  mkdir -p "${PREFIX}/lib/pkgconfig"
+  if [ ! -f "${PREFIX}/lib/pkgconfig/freetype2.pc" ]; then
+    cat > "${PREFIX}/lib/pkgconfig/freetype2.pc" <<PCEOF
+prefix=${PREFIX}
+exec_prefix=\${prefix}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: FreeType 2
+Description: A free, high-quality, and portable font engine.
+Version: 2.13.3
+Requires:
+Libs: -L\${libdir} -lfreetype
+Libs.private: -lz
+Cflags: -I\${includedir}/freetype2
+PCEOF
+  fi
+  echo ">>> freetype2.pc at: ${PREFIX}/lib/pkgconfig/"
+  ls -la "${PREFIX}/lib/pkgconfig/freetype"* 2>/dev/null || true
+  cd "$WORKDIR"
 build_fribidi() {
   echo ">>> Building fribidi"
   clone "https://github.com/fribidi/fribidi.git" fribidi v1.0.16
@@ -370,7 +388,8 @@ cpu = '${CPU}'
 endian = 'little'
 
 [properties]
-pkg_config_libdir = '${PREFIX}/lib/pkgconfig'
+pkg_config_libdir = ['${PREFIX}/lib/pkgconfig']
+cmake_prefix_path = ['${PREFIX}']
 
 [built-in options]
 c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
@@ -412,7 +431,8 @@ cpu = '${CPU}'
 endian = 'little'
 
 [properties]
-pkg_config_libdir = '${PREFIX}/lib/pkgconfig'
+pkg_config_libdir = ['${PREFIX}/lib/pkgconfig']
+cmake_prefix_path = ['${PREFIX}']
 
 [built-in options]
 c_args = ['-fPIC', '-DANDROID', '-D__ANDROID_API__=${API}']
